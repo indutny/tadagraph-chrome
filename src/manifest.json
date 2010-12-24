@@ -1,0 +1,19 @@
+{
+  "name": "Tadagraph",
+  "version": "0.0.4",
+  "description": "Tadagraph notifier",
+  "icons": {
+    "16": "images/16.png",
+    "128": "images/128.png",
+    "256": "images/256.png"
+  },
+  "browser_action": {
+    "default_icon": "images/16.png",
+    "default_title": "Tadagraph"
+  },
+  "background_page": "background.html",
+  "permissions": [
+    "http://tadagraph.com/",
+    "tabs"
+  ]
+}
