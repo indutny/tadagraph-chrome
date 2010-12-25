@@ -91,6 +91,8 @@ API.prototype.notificationsChanges = function(callback) {
     
     refreshCount();
     
+    setInterval(refreshCount, 30000);
+    
   });
   
   function setBadgeCount(count) {
