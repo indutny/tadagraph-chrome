@@ -96,6 +96,11 @@ API.prototype.notificationsChanges = function(callback) {
   });
   
   function setBadgeCount(count) {
+    // Do not bounce if number wasn't changed
+    if (count == setBadgeCount.oldCount) return;
+    
+    setBadgeCount.oldCount = count;
+    
     if (count == parseInt(count)) {
       chrome.browserAction.setBadgeBackgroundColor({
         color: [167, 203, 2, 255]
