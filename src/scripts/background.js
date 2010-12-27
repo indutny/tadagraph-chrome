@@ -85,8 +85,9 @@ API.prototype.notificationsChanges = function(callback) {
       });
     }
     
-    api.notificationsChanges(function(notification) {
+    api.notificationsChanges(function(notification) {      
       refreshCount();
+      $.notification(notification);
     });
     
     refreshCount();

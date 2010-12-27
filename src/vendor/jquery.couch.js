@@ -12,10 +12,10 @@
 
 (function($) {
   $.couch = $.couch || {};
-
+  
   // Ajax wrapper for continuous changes
   // (since jquery doesn't support them)
-  $._ajax = function(options) {
+  function chunkedAjax(options) {
     var xhr = $.ajax(options);
 
     if (!options.chunked || !options.progress) return xhr;
@@ -29,6 +29,15 @@
         onprogress(xhr.responseText.substr(lastPos));
 
         lastPos = xhr.responseText.length;
+
+        // Prevent memory leaks (b/c xhr buffer is not cleaning)
+        if (xhr.responseText.length > (options.bufferLimit || 64000)) {
+          try {
+            xhr.abort();
+          } catch (e) {
+          }
+          options.success({});
+        }
       }
 
       return _onreadystatechange.apply(this, arguments);
@@ -36,7 +45,7 @@
 
     return xhr;
   }
-
+  
   function encodeDocId(docID) {
     var parts = docID.split("/");
     if (parts[0] == "_design") {
@@ -46,7 +55,7 @@
     return encodeURIComponent(docID);
   };
 
-  function prepareUserDoc(user_doc, new_password) {
+  function prepareUserDoc(user_doc, new_password) {    
     if (typeof hex_sha1 == "undefined") {
       alert("creating a user doc requires sha1.js to be loaded in the page");
       return;
@@ -94,7 +103,7 @@
         }
       }
       if (value === null) {
-        req.type = "DELETE";
+        req.type = "DELETE";        
       } else if (value !== undefined) {
         req.type = "PUT";
         req.data = toJSON(value);
@@ -106,7 +115,7 @@
         "An error occurred retrieving/updating the server configuration"
       );
     },
-
+    
     session: function(options) {
       options = options || {};
       $.ajax({
@@ -133,7 +142,7 @@
       });
     },
 
-    signup: function(user_doc, password, options) {
+    signup: function(user_doc, password, options) {      
       options = options || {};
       // prepare user doc based on name and password
       user_doc = prepareUserDoc(user_doc, password);
@@ -141,7 +150,7 @@
         db.saveDoc(user_doc, options);
       });
     },
-
+    
     login: function(options) {
       options = options || {};
       $.ajax({
@@ -198,8 +207,9 @@
       };
       return {
         name: name,
-        uri: (db_opts.urlPrefix || "") + "/" + encodeURIComponent(name) +
-             (db_opts.urlSuffix ? "/" + db_opts.urlSuffix : "") + "/",
+        uri: (db_opts.urlPrefix || '') + "/" + encodeURIComponent(name) + 
+             (db_opts.urlSuffix ? '/' + db_opts.urlSuffix : '') +"/",
+
         compact: function(options) {
           $.extend(options, {successStatus: 202});
           ajax({
@@ -267,22 +277,27 @@
               },
               stop : function() {
                 active = false;
-
+                
                 if (xhr) {
-                  xhr.abort();
+                  try {
+                    xhr.abort();
+                  } catch (e) {
+                  }
                 }
               }
             };
-
+          
+          // At the moment only webkit browsers support continuous feed listening
           options.continuous = $.browser.webkit;
-
+          
           // call each listener when there is a change
           function triggerListeners(resp) {
             $.each(listeners, function() {
               this(resp);
             });
           };
-
+          
+          
           function onprogress(resp) {
             buffer += resp;
             var lines = buffer.split(/\n/g);
@@ -291,7 +306,7 @@
               buffer = lines.pop();
               lines.forEach(online);
             }
-          }
+          };
 
           function online(line) {
             try {
@@ -309,10 +324,10 @@
               results: [line],
               last_seq: since
             });
-          }
+          };
 
           // when there is a change, call any listeners, then check for another change
-          // (only if not continuous mode)
+          // (only if we are not in continuous mode)
           options.success = options.continuous ? function(resp) {
             timeout = 100;
             if (active) {
@@ -326,7 +341,6 @@
               getChangesSince();
             };
           };
-
           options.error = function() {
             if (active) {
               setTimeout(getChangesSince, timeout);
@@ -609,7 +623,7 @@
 
         setDbProperty: function(propName, propValue, options, ajaxOptions) {
           ajax({
-            type: "PUT",
+            type: "PUT", 
             url: this.uri + propName + encodeOptions(options),
             data : JSON.stringify(propValue)
           },
@@ -621,7 +635,7 @@
       };
     },
 
-    encodeDocId: encodeDocId,
+    encodeDocId: encodeDocId, 
 
     info: function(options) {
       ajax(
@@ -667,7 +681,7 @@
     options = $.extend({successStatus: 200}, options);
     ajaxOptions = $.extend({contentType: "application/json"}, ajaxOptions);
     errorMessage = errorMessage || "Unknown error";
-    return $._ajax($.extend($.extend({
+    return chunkedAjax($.extend($.extend({
       type: "GET", dataType: "json", cache : !$.browser.msie,
       beforeSend: function(xhr){
         if(ajaxOptions && ajaxOptions.headers){
