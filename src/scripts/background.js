@@ -92,9 +92,16 @@ API.prototype.notificationsChanges = function(callback) {
     
     refreshCount();
     
+    setInterval(refreshCount, 30000);
+    
   });
   
   function setBadgeCount(count) {
+    // Do not bounce if number wasn't changed
+    if (count == setBadgeCount.oldCount) return;
+    
+    setBadgeCount.oldCount = count;
+    
     if (count == parseInt(count)) {
       chrome.browserAction.setBadgeBackgroundColor({
         color: [167, 203, 2, 255]
