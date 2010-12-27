@@ -99,7 +99,7 @@
           created_by_nickname = notification.created_by;
     };
 
-    return 'data:text/html;charset=utf-8;plain,' + encodeURIComponent($.mustache(
+    return 'data:text/html;plain,' + encodeURIComponent($.mustache(
       notification_template,
       {
         image: 'http://tadagraph.com/api/people/' + created_by_id + '/avatar',
