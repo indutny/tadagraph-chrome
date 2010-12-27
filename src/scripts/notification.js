@@ -99,14 +99,14 @@
           created_by_nickname = notification.created_by;
     };
 
-    return 'data:text/html;plain,' + encodeURIComponent($.mustache(
+    return 'data:text/html;plain;charset=UTF-8,' + $.mustache(
       notification_template,
       {
         image: 'http://tadagraph.com/api/people/' + created_by_id + '/avatar',
         created_by_nickname: created_by_nickname,
         body: prepareBody(notification.body, notification.ref)
       }
-    ));
+    );
   }
   
   var has_seen = {};
