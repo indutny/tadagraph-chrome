@@ -48,8 +48,8 @@ API.prototype.getNotifications = function(options) {
     }
   }, options, {
     group: true,
-    startkey: ["projects"],
-    endkey: ["projects0"]
+    startkey: [+new Date - 6048e5],
+    endkey: [+new Date]
   }));  
 };
 
@@ -79,7 +79,12 @@ API.prototype.notificationsChanges = function(callback) {
       api.getNotifications({
         success: function(response) {
           setBadgeCount(response.rows.reduce(function(total, row){
-            return total + (parseInt(row.value) || 0);
+            return total +
+                ((row.key[1] == 'projects' || row.key[1] == 'teams' ||
+                  row.key[1] == 'locations') ?
+                                (parseInt(row.value) || 0)
+                                :
+                                0);
           }, 0));
         }
       });

@@ -26,7 +26,7 @@
   }
   
   function prepareBody(body, doc, showTopic, hideFirstReply) {
-    body = $("<div>").text(body).html();
+    body = $("<div>").text(body || '').html();
     body = body.replace(/\n/g, '<br />');
     var regex = /\b(https?:\/\/[^ <]+[^.<])/g;
     body = body.replace(regex, '<a href="$1" target="_blank">$1</a>');
