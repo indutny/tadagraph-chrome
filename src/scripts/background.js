@@ -90,9 +90,13 @@ API.prototype.notificationsChanges = function(callback) {
       });
     }
     
-    api.notificationsChanges(function(notification) {      
+    api.notificationsChanges(function(notification) {
       refreshCount();
-      $.notification(notification);
+      
+      // Do not show notification when marking as viewed
+      if (!notification.viewed_at) {
+        $.notification(notification);
+      }
     });
     
     refreshCount();
