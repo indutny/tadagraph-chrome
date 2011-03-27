@@ -54,7 +54,7 @@ API.prototype.getNotifications = function(options) {
 };
 
 API.prototype.notificationsChanges = function(callback) {  
-  var changes = this.db.changes(0 , {
+  var changes = this.db.changes(null, {
     filter: 'core/notifications',
     include_docs: true,
     heartbeat: 10000
@@ -73,7 +73,15 @@ API.prototype.notificationsChanges = function(callback) {
 (function() {
   var api = new API(CONFIG),
       bouncingIcon = $.bouncingIcon();
-  
+
+  var TRIM_META_PATTERN_START = /^(\[[^\[]+\]|@[\w\d-_]+|#[\w\d-_]+|\s)+/gi,
+      TRIM_META_PATTERN_END = /(\[[^\[]+\]|@[\w\d-_]+|#[\w\d-_]+|\s)+$/gi,
+      tagsList = 'new inprogress finished delivered cancelled'.split(' ');
+
+  function trimMeta(body) {
+    return body && body.replace(TRIM_META_PATTERN_START, "").replace(TRIM_META_PATTERN_END, "");
+  }
+
   api.init(function() {
     function refreshCount() {
       api.getNotifications({
@@ -94,9 +102,11 @@ API.prototype.notificationsChanges = function(callback) {
       refreshCount();
       
       // Do not show notification when marking as viewed
-      if (!notification.viewed_at) {
-        $.notification(notification);
-      }
+      if (notification.viewed_at) return;
+      if (!notification.ref || trimMeta(notification.ref.body)) return;
+      if (!notification.ref.tags) return;
+      if (tagsList.indexOf(notification.ref.tags[0]) != -1) return;
+      $.notification(notification);
     });
     
     refreshCount();
