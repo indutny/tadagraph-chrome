@@ -312,7 +312,7 @@
             try {
               line = $.parseJSON(line);
             } catch(e) {
-              $.log('Can\'t parse server\'s response: ' + e.toString());
+              console.log('Can\'t parse server\'s response: ' + e.toString());
               return;
             }
             if (!line) return;

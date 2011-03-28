@@ -102,10 +102,14 @@ API.prototype.notificationsChanges = function(callback) {
       refreshCount();
       
       // Do not show notification when marking as viewed
-      if (notification.viewed_at) return;
+      if (!notification || notification.viewed_at) return;
       if (!notification.ref || trimMeta(notification.ref.body)) return;
-      if (!notification.ref.tags) return;
-      if (tagsList.indexOf(notification.ref.tags[0]) != -1) return;
+
+      if (notification.ref.tags &&
+          tagsList.indexOf(notification.ref.tags[0]) != -1) {
+        return;
+      }
+
       $.notification(notification);
     });
     
