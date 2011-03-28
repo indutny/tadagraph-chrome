@@ -103,10 +103,11 @@ API.prototype.notificationsChanges = function(callback) {
       
       // Do not show notification when marking as viewed
       if (!notification || notification.viewed_at) return;
-      if (!notification.ref || trimMeta(notification.ref.body)) return;
+      if (!notification.ref) return;
 
       if (notification.ref.tags &&
-          tagsList.indexOf(notification.ref.tags[0]) != -1) {
+          tagsList.indexOf(notification.ref.tags[0]) != -1 &&
+          !trimMeta(notification.ref.body)) {
         return;
       }
 
