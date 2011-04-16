@@ -27,6 +27,17 @@
   
   function prepareBody(body, doc, showTopic, hideFirstReply) {
     body = $("<div>").text(body || '').html();
+
+    var trimmed = body.match(/^(.{1,140})(?:$|\s)/m);
+
+    if (trimmed) {
+      if (trimmed[1].length !== body.length) {
+        body = trimmed[1] + ' ...';
+      }
+    } else {
+      body = body.substr(0, 140) + ' ...';
+    }
+
     body = body.replace(/\n/g, '<br />');
     var regex = /\b(https?:\/\/[^ <]+[^.<])/g;
     body = body.replace(regex, '<a href="$1" target="_blank">$1</a>');
@@ -118,12 +129,35 @@
     
     var html = render(data),
         notification = webkitNotifications.createHTMLNotification(html);
-  
+
     notification.show();
     // Auto-close it after 15 seconds
     setTimeout(function() {
       notification.cancel();
     }, 15000);
   };
+
+  return;
+  setTimeout(function() {
+    $.notification({
+      _id: Math.random(),
+      created_by: {
+        id: 'u1203',
+        nickname: 'fedor'
+      },
+      ref: {
+        db: {
+          name: 'cosmos',
+          type: 'project'
+        }
+      },
+      body: [
+        'hahahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabb',
+        'asdfasdga09hga0rw9hyq09rhuq0r9unq0r9ebqu0r9nb0r9nq0uqrr',
+        'qwerbqwrn0q9urn0q9e0un9qeutn0q9eu0trn9que0n9que9rnuqe0r',
+        'qerqerjn0q9urn09qenr0q9eu0rtn9que0r9nuqe0r9nuq0e9rnqer0'
+      ].join('')
+    });
+  }, 1000);
   
 })();
