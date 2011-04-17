@@ -44,7 +44,6 @@ API.prototype.init = function(callback) {
 API.prototype.getNotifications = function(options) {
   this.db.view("notifier-app/count", $.extend(true, {
     error: function() {
-      console.log('API.notifications.count error:', arguments);
     }
   }, options, {
     group: true,
@@ -115,8 +114,6 @@ API.prototype.notificationsChanges = function(callback) {
     });
     
     refreshCount();
-    
-    setInterval(refreshCount, 30000);
     
   });
   

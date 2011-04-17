@@ -1,6 +1,6 @@
 {
   "name": "Tadagraph",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Tadagraph notifier",
   "icons": {
     "16": "images/16.png",
@@ -13,7 +13,7 @@
   },
   "background_page": "background.html",
   "permissions": [
-    "http://tadagraph.com/",
+    "https://tadagraph.com/",
     "tabs",
     "notifications"
   ]

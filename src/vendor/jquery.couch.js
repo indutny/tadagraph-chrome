@@ -309,15 +309,21 @@
           };
 
           function online(line) {
+            line = (line || '').trim();
+            if (!line) return;
+
             try {
               line = $.parseJSON(line);
             } catch(e) {
-              console.log('Can\'t parse server\'s response: ' + e.toString());
               return;
             }
+
             if (!line) return;
 
-            since = line.seq;
+            since = (line && line.seq) ?
+                        Math.max(since, line.seq)
+                        :
+                        since;
 
             // Emulate usual result
             triggerListeners({
